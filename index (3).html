@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b63ce">
+  <title>Sanibossxm Data App</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#172033}
+    .app{max-width:480px;margin:auto;min-height:100vh;background:#fff}
+    header{background:linear-gradient(135deg,#0759c7,#1595ff);color:#fff;padding:22px 18px;border-radius:0 0 24px 24px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:48px;height:48px;border-radius:14px;background:#fff;color:#0759c7;display:grid;place-items:center;font-weight:800}
+    h1{font-size:21px;margin:0}.sub{font-size:12px;opacity:.9;margin-top:4px}
+    .balance{margin-top:18px;background:rgba(255,255,255,.15);padding:14px;border-radius:16px}
+    .balance small{display:block;opacity:.85}.balance strong{font-size:25px;display:block;margin-top:5px}
+    main{padding:18px}
+    .tabs{display:flex;gap:8px;margin-bottom:18px}
+    .tab{flex:1;border:0;padding:12px;border-radius:12px;background:#eef3f9;font-weight:700;cursor:pointer}
+    .tab.active{background:#0759c7;color:#fff}
+    .panel{display:none}.panel.active{display:block}
+    label{display:block;font-size:13px;font-weight:700;margin:12px 0 6px}
+    input,select{width:100%;padding:13px;border:1px solid #d7deea;border-radius:10px;font-size:15px;outline:none}
+    input:focus,select:focus{border-color:#1688ed}
+    .networks{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:8px}
+    .network{border:1px solid #d7deea;background:#fff;padding:13px;border-radius:12px;cursor:pointer;font-weight:700}
+    .network.selected{border:2px solid #0759c7;background:#eef7ff}
+    .packages{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:8px}
+    .pkg{border:1px solid #d7deea;padding:14px;border-radius:12px;cursor:pointer}
+    .pkg.selected{border:2px solid #0759c7;background:#eef7ff}
+    .pkg b{display:block}.pkg span{font-size:13px;color:#0759c7;font-weight:700}
+    .btn{width:100%;border:0;border-radius:12px;padding:14px;margin-top:18px;background:#0759c7;color:#fff;font-size:16px;font-weight:800;cursor:pointer}
+    .btn.secondary{background:#edf3fa;color:#0759c7}
+    .notice{margin-top:14px;padding:12px;border-radius:10px;background:#fff7df;font-size:12px;line-height:1.5}
+    .footer{text-align:center;padding:20px;color:#718096;font-size:12px}
+    .auth{padding-top:20px}.hidden{display:none!important}
+    .logout{float:right;background:none;border:0;color:#fff;font-weight:700;cursor:pointer}
+    .admin-note{font-size:12px;color:#667085;margin-top:10px}
+  </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <button id="logoutBtn" class="logout hidden">Logout</button>
+    <div class="brand">
+      <div class="logo">SB</div>
+      <div><h1>Sanibossxm</h1><div class="sub">Data & Airtime Services</div></div>
+    </div>
+    <div class="balance">
+      <small>Wallet Balance</small>
+      <strong id="balance">₦0.00</strong>
+    </div>
+  </header>
+
+  <main>
+    <section id="authPanel" class="auth">
+      <div class="tabs">
+        <button class="tab active" data-auth="login">Login</button>
+        <button class="tab" data-auth="register">Register</button>
+      </div>
+
+      <form id="loginForm">
+        <label>Email or Phone</label>
+        <input id="loginId" required placeholder="Enter email or phone">
+        <label>Password</label>
+        <input id="loginPassword" type="password" required placeholder="Enter password">
+        <button class="btn">Login</button>
+      </form>
+
+      <form id="registerForm" class="hidden">
+        <label>Full Name</label>
+        <input id="regName" required placeholder="Your full name">
+        <label>Phone Number</label>
+        <input id="regPhone" required placeholder="08012345678">
+        <label>Email</label>
+        <input id="regEmail" type="email" required placeholder="you@example.com">
+        <label>Password</label>
+        <input id="regPassword" type="password" minlength="6" required placeholder="Minimum 6 characters">
+        <button class="btn">Create Account</button>
+      </form>
+      <div class="notice">Demo frontend: accounts and wallet data are stored only in this browser. Connect a secure backend before using real payments or selling real data.</div>
+    </section>
+
+    <section id="shopPanel" class="panel">
+      <div class="tabs">
+        <button class="tab active" data-shop="data">Data</button>
+        <button class="tab" data-shop="airtime">Airtime</button>
+      </div>
+
+      <div id="dataShop">
+        <label>Choose Network</label>
+        <div class="networks">
+          <button class="network selected" data-network="MTN">MTN</button>
+          <button class="network" data-network="GLO">GLO</button>
+          <button class="network" data-network="Airtel">Airtel</button>
+          <button class="network" data-network="9mobile">9mobile</button>
+        </div>
+
+        <label>Data Package</label>
+        <div class="packages" id="packages"></div>
+
+        <label>Phone Number</label>
+        <input id="dataPhone" inputmode="numeric" placeholder="08012345678">
+        <button id="buyData" class="btn">Buy Data</button>
+      </div>
+
+      <div id="airtimeShop" class="hidden">
+        <label>Network</label>
+        <select id="airtimeNetwork">
+          <option>MTN</option><option>GLO</option><option>Airtel</option><option>9mobile</option>
+        </select>
+        <label>Phone Number</label>
+        <input id="airtimePhone" inputmode="numeric" placeholder="08012345678">
+        <label>Amount (₦)</label>
+        <input id="airtimeAmount" type="number" min="50" placeholder="500">
+        <button id="buyAirtime" class="btn">Buy Airtime</button>
+      </div>
+
+      <div class="notice">
+        Payment option: <b>OPay</b>. This demo does not process real payments.
+      </div>
+    </section>
+  </main>
+
+  <div class="footer">© 2026 Sanibossxm • Fast Data, Low Prices!</div>
+</div>
+
+<script>
+  const packages = {
+    MTN:[["500MB",450],["1GB",900],["2GB",1800]],
+    GLO:[["500MB",300],["1GB",600],["2GB",1200]],
+    Airtel:[["500MB",400],["1GB",800],["2GB",1800]],
+    "9mobile":[["500MB",300],["1GB",600]]
+  };
+
+  let selectedNetwork="MTN", selectedPackage=packages.MTN[0];
+  const $=id=>document.getElementById(id);
+
+  function renderPackages(){
+    $("packages").innerHTML=packages[selectedNetwork].map((p,i)=>
+      `<button class="pkg ${i===0?'selected':''}" data-index="${i}">
+        <b>${p[0]}</b><span>₦${p[1].toLocaleString()}</span>
+      </button>`).join("");
+    selectedPackage=packages[selectedNetwork][0];
+    document.querySelectorAll(".pkg").forEach(el=>{
+      el.onclick=()=>{
+        document.querySelectorAll(".pkg").forEach(x=>x.classList.remove("selected"));
+        el.classList.add("selected");
+        selectedPackage=packages[selectedNetwork][Number(el.dataset.index)];
+      };
+    });
+  }
+  renderPackages();
+
+  document.querySelectorAll(".network").forEach(btn=>{
+    btn.onclick=()=>{
+      document.querySelectorAll(".network").forEach(x=>x.classList.remove("selected"));
+      btn.classList.add("selected");
+      selectedNetwork=btn.dataset.network;
+      renderPackages();
+    };
+  });
+
+  document.querySelectorAll("[data-auth]").forEach(btn=>{
+    btn.onclick=()=>{
+      document.querySelectorAll("[data-auth]").forEach(x=>x.classList.remove("active"));
+      btn.classList.add("active");
+      const login=btn.dataset.auth==="login";
+      $("loginForm").classList.toggle("hidden",!login);
+      $("registerForm").classList.toggle("hidden",login);
+    };
+  });
+
+  document.querySelectorAll("[data-shop]").forEach(btn=>{
+    btn.onclick=()=>{
+      document.querySelectorAll("[data-shop]").forEach(x=>x.classList.remove("active"));
+      btn.classList.add("active");
+      const data=btn.dataset.shop==="data";
+      $("dataShop").classList.toggle("hidden",!data);
+      $("airtimeShop").classList.toggle("hidden",data);
+    };
+  });
+
+  function showShop(){
+    $("authPanel").classList.add("hidden");
+    $("shopPanel").classList.add("active");
+    $("logoutBtn").classList.remove("hidden");
+  }
+
+  $("loginForm").onsubmit=e=>{
+    e.preventDefault();
+    const id=$("loginId").value.trim();
+    if(!id){return}
+    localStorage.setItem("saniboss_user",id);
+    showShop();
+  };
+
+  $("registerForm").onsubmit=e=>{
+    e.preventDefault();
+    localStorage.setItem("saniboss_user",$("regPhone").value.trim());
+    alert("Account created successfully. You can now continue.");
+    showShop();
+  };
+
+  $("logoutBtn").onclick=()=>{
+    localStorage.removeItem("saniboss_user");
+    location.reload();
+  };
+
+  $("buyData").onclick=()=>{
+    const phone=$("dataPhone").value.trim();
+    if(!/^0\d{10}$/.test(phone)) return alert("Enter a valid 11-digit Nigerian phone number.");
+    alert(`Demo order: ${selectedNetwork} ${selectedPackage[0]} for ${phone}. Amount: ₦${selectedPackage[1].toLocaleString()}.`);
+  };
+
+  $("buyAirtime").onclick=()=>{
+    const phone=$("airtimePhone").value.trim(), amount=Number($("airtimeAmount").value);
+    if(!/^0\d{10}$/.test(phone)) return alert("Enter a valid 11-digit Nigerian phone number.");
+    if(!amount || amount<50) return alert("Enter an airtime amount of at least ₦50.");
+    alert(`Demo order: ${$("airtimeNetwork").value} airtime ₦${amount.toLocaleString()} for ${phone}.`);
+  };
+
+  if(localStorage.getItem("saniboss_user")) showShop();
+</script>
+</body>
+</html>
