@@ -257,6 +257,7 @@
     <!-- TRANSACTIONS -->
     <div class="card">
       <h2>Transaction History</h2>
+
       <div id="transactions">
         <p>No transactions yet.</p>
       </div>
@@ -274,66 +275,92 @@
 
 <script>
 
-  /*
-    IMPORTANT:
-    This is the Render backend URL we were using.
-  */
   const BACKEND_URL =
     "https://sanibossxm-backend-3.onrender.com";
 
   let currentUser = null;
 
-  // Load saved demo account from browser
+
+  // Load saved demo account
   window.onload = function() {
-    const savedUser = localStorage.getItem("saniboss_user");
+
+    const savedUser =
+      localStorage.getItem("saniboss_user");
 
     if (savedUser) {
-      currentUser = JSON.parse(savedUser);
+
+      currentUser =
+        JSON.parse(savedUser);
+
       showDashboard();
     }
   };
 
 
   function showMessage(id, text) {
-    const box = document.getElementById(id);
+
+    const box =
+      document.getElementById(id);
+
     box.innerText = text;
+
     box.style.display = "block";
   }
 
 
   function register() {
 
-    const name = document.getElementById("name").value.trim();
-    const phone = document.getElementById("phone").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
+    const name =
+      document.getElementById("name").value.trim();
+
+    const phone =
+      document.getElementById("phone").value.trim();
+
+    const email =
+      document.getElementById("email").value.trim();
+
+    const password =
+      document.getElementById("password").value;
+
 
     if (!name || !phone || !email || !password) {
+
       showMessage(
         "authMessage",
         "Please fill in all fields."
       );
+
       return;
     }
 
+
     currentUser = {
+
       name: name,
+
       phone: phone,
+
       email: email,
+
       password: password,
+
       balance: 0,
+
       transactions: []
     };
+
 
     localStorage.setItem(
       "saniboss_user",
       JSON.stringify(currentUser)
     );
 
+
     showMessage(
       "authMessage",
       "Account created successfully."
     );
+
 
     showDashboard();
   }
@@ -341,32 +368,45 @@
 
   function login() {
 
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
+    const email =
+      document.getElementById("email").value.trim();
+
+    const password =
+      document.getElementById("password").value;
+
 
     const savedUser =
       localStorage.getItem("saniboss_user");
 
+
     if (!savedUser) {
+
       showMessage(
         "authMessage",
         "No account found. Please register first."
       );
+
       return;
     }
 
-    const user = JSON.parse(savedUser);
+
+    const user =
+      JSON.parse(savedUser);
+
 
     if (
       user.email !== email ||
       user.password !== password
     ) {
+
       showMessage(
         "authMessage",
         "Incorrect email or password."
       );
+
       return;
     }
+
 
     currentUser = user;
 
@@ -380,14 +420,18 @@
       .getElementById("authSection")
       .classList.add("hidden");
 
+
     document
       .getElementById("dashboard")
       .classList.remove("hidden");
 
+
     document.getElementById("welcome").innerText =
       "Welcome, " + currentUser.name;
 
+
     updateBalance();
+
     showTransactions();
   }
 
@@ -395,52 +439,146 @@
   function updateBalance() {
 
     document.getElementById("balance").innerText =
-      Number(currentUser.balance || 0)
-      .toLocaleString("en-NG", {
-        minimumFractionDigits: 2
-      });
+
+      Number(
+        currentUser.balance || 0
+      ).toLocaleString(
+        "en-NG",
+        {
+          minimumFractionDigits: 2
+        }
+      );
   }
 
 
-  function deposit() {
+  /*
+    PAYSTACK DEPOSIT
+
+    The secret Paystack key stays on the
+    Render backend.
+
+    The frontend only asks the backend
+    to initialize the payment.
+  */
+
+  async function deposit() {
 
     const amount =
       Number(
         document.getElementById("depositAmount").value
       );
 
+
     if (!amount || amount < 100) {
+
       showMessage(
         "depositMessage",
         "Minimum deposit is ₦100."
       );
+
       return;
     }
 
-    /*
-      DEMO ONLY:
-      This does NOT charge a real card.
-      Real payments must be processed through
-      the backend and Paystack.
-    */
 
-    currentUser.balance += amount;
+    if (!currentUser || !currentUser.email) {
 
-    currentUser.transactions.unshift({
-      type: "Wallet Deposit",
-      amount: amount,
-      date: new Date().toLocaleString()
-    });
+      showMessage(
+        "depositMessage",
+        "Please login first."
+      );
 
-    saveUser();
+      return;
+    }
 
-    updateBalance();
-    showTransactions();
 
-    showMessage(
-      "depositMessage",
-      "Demo deposit added successfully."
-    );
+    try {
+
+      showMessage(
+        "depositMessage",
+        "Connecting to Paystack..."
+      );
+
+
+      const reference =
+        "SANIBOSS-" +
+        Date.now();
+
+
+      const response =
+        await fetch(
+          BACKEND_URL +
+          "/api/payment/initialize",
+          {
+
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+
+              email:
+                currentUser.email,
+
+              amount:
+                amount,
+
+              reference:
+                reference,
+
+              callback_url:
+                window.location.href
+
+            })
+          }
+        );
+
+
+      const result =
+        await response.json();
+
+
+      if (
+        !response.ok ||
+        !result.success
+      ) {
+
+        throw new Error(
+          result.message ||
+          "Payment initialization failed"
+        );
+      }
+
+
+      if (
+        result.data &&
+        result.data.authorization_url
+      ) {
+
+        window.location.href =
+          result.data.authorization_url;
+
+      } else {
+
+        throw new Error(
+          "Paystack did not return a payment URL."
+        );
+      }
+
+
+    } catch (error) {
+
+      console.error(error);
+
+
+      showMessage(
+        "depositMessage",
+        "Payment error: " +
+        error.message
+      );
+    }
   }
 
 
@@ -449,53 +587,78 @@
     const network =
       document.getElementById("network").value;
 
+
     const phone =
-      document.getElementById("dataPhone").value.trim();
+      document.getElementById("dataPhone")
+      .value.trim();
+
 
     if (!network) {
+
       showMessage(
         "dataMessage",
         "Please select a network."
       );
+
       return;
     }
 
+
     if (!phone) {
+
       showMessage(
         "dataMessage",
         "Enter the recipient phone number."
       );
+
       return;
     }
 
+
     if (currentUser.balance < price) {
+
       showMessage(
         "dataMessage",
         "Insufficient wallet balance."
       );
+
       return;
     }
 
+
     /*
-      DEMO PURCHASE.
-      Do NOT treat this as real data vending yet.
-      The backend needs to be connected to a
-      legitimate data-vending API.
+      DEMO PURCHASE ONLY.
+
+      Real data vending will be connected
+      through the backend later.
     */
 
     currentUser.balance -= price;
 
+
     currentUser.transactions.unshift({
-      type: network + " " + bundle,
-      phone: phone,
-      amount: -price,
-      date: new Date().toLocaleString()
+
+      type:
+        network + " " + bundle,
+
+      phone:
+        phone,
+
+      amount:
+        -price,
+
+      date:
+        new Date().toLocaleString()
+
     });
+
 
     saveUser();
 
     updateBalance();
+
     showTransactions();
+
 
     showMessage(
       "dataMessage",
@@ -507,36 +670,77 @@
   function showTransactions() {
 
     const box =
-      document.getElementById("transactions");
+      document.getElementById(
+        "transactions"
+      );
+
 
     if (
       !currentUser.transactions ||
       currentUser.transactions.length === 0
     ) {
+
       box.innerHTML =
         "<p>No transactions yet.</p>";
+
       return;
     }
 
+
     box.innerHTML =
+
       currentUser.transactions
+
       .map(function(tx) {
 
         const amount =
+
           Number(tx.amount) >= 0
-            ? "+₦" + Number(tx.amount).toLocaleString()
-            : "-₦" + Math.abs(Number(tx.amount)).toLocaleString();
+
+            ? "+₦" +
+              Number(
+                tx.amount
+              ).toLocaleString()
+
+            : "-₦" +
+              Math.abs(
+                Number(tx.amount)
+              ).toLocaleString();
+
 
         return `
+
           <div class="transaction">
-            <strong>${tx.type}</strong><br>
-            ${tx.phone ? "Phone: " + tx.phone + "<br>" : ""}
-            Amount: ${amount}<br>
-            <small>${tx.date}</small>
+
+            <strong>
+              ${tx.type}
+            </strong>
+
+            <br>
+
+            ${
+              tx.phone
+              ? "Phone: " +
+                tx.phone +
+                "<br>"
+              : ""
+            }
+
+            Amount:
+            ${amount}
+
+            <br>
+
+            <small>
+              ${tx.date}
+            </small>
+
           </div>
+
         `;
 
       })
+
       .join("");
   }
 
