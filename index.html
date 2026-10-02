@@ -1,82 +1,567 @@
-<script>
-const API_BASE_URL = "https://sanibossxm-backend-3.onrender.com";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0759b8">
+  <title>SanibossXM - Data & Wallet</title>
 
-// Register a new customer
-async function registerCustomer(name, email, password) {
-  const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      name,
-      email,
-      password
-    })
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.message || "Registration failed");
-  }
-
-  return data;
-}
-
-// Login customer
-async function loginCustomer(email, password) {
-  const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      email,
-      password
-    })
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.message || "Login failed");
-  }
-
-  // Save login token
-  localStorage.setItem("saniboss_token", data.token);
-
-  return data;
-}
-
-// Get logged-in customer's account
-async function getMyAccount() {
-  const token = localStorage.getItem("saniboss_token");
-
-  if (!token) {
-    throw new Error("You are not logged in");
-  }
-
-  const response = await fetch(`${API_BASE_URL}/api/me`, {
-    headers: {
-      "Authorization": `Bearer ${token}`
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
     }
-  });
 
-  const data = await response.json();
+    body {
+      background: #f2f6fb;
+      color: #222;
+    }
 
-  if (!response.ok) {
-    throw new Error(data.message || "Unable to load account");
+    header {
+      background: linear-gradient(135deg, #0759b8, #00a6ff);
+      color: white;
+      padding: 22px 16px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 30px;
+      font-weight: 800;
+    }
+
+    header p {
+      margin-top: 6px;
+      opacity: .95;
+    }
+
+    .container {
+      width: 94%;
+      max-width: 900px;
+      margin: 20px auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 4px 18px rgba(0,0,0,.08);
+    }
+
+    h2 {
+      color: #0759b8;
+      margin-bottom: 15px;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 13px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccd6e0;
+      font-size: 15px;
+    }
+
+    button {
+      background: #0759b8;
+      color: white;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #06458e;
+    }
+
+    .wallet {
+      background: linear-gradient(135deg, #0759b8, #00a6ff);
+      color: white;
+      border-radius: 14px;
+      padding: 25px;
+      margin-bottom: 18px;
+    }
+
+    .wallet small {
+      opacity: .9;
+    }
+
+    .balance {
+      font-size: 34px;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+    }
+
+    .bundle {
+      border: 1px solid #dce4ec;
+      border-radius: 12px;
+      padding: 15px;
+      text-align: center;
+      background: #fff;
+    }
+
+    .bundle strong {
+      display: block;
+      font-size: 19px;
+      color: #0759b8;
+      margin-bottom: 5px;
+    }
+
+    .price {
+      margin: 8px 0;
+      font-weight: bold;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .logout {
+      background: #dc3545;
+      margin-top: 10px;
+    }
+
+    .logout:hover {
+      background: #b02a37;
+    }
+
+    .message {
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      background: #eef6ff;
+      color: #0759b8;
+      display: none;
+    }
+
+    .transaction {
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #666;
+      font-size: 13px;
+    }
+
+    @media(max-width: 500px) {
+      header h1 {
+        font-size: 25px;
+      }
+
+      .balance {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>SANIBOSSXM</h1>
+  <p>Fast Data • Easy Payments • Reliable Service</p>
+</header>
+
+<div class="container">
+
+  <!-- LOGIN / REGISTER -->
+  <section id="authSection" class="card">
+    <h2>Customer Account</h2>
+
+    <input id="name" type="text" placeholder="Full name">
+    <input id="phone" type="tel" placeholder="Phone number">
+    <input id="email" type="email" placeholder="Email address">
+    <input id="password" type="password" placeholder="Password">
+
+    <button onclick="register()">Create Account</button>
+    <button onclick="login()">Login</button>
+
+    <div id="authMessage" class="message"></div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section id="dashboard" class="hidden">
+
+    <div class="wallet">
+      <small>Wallet Balance</small>
+      <div class="balance">₦<span id="balance">0.00</span></div>
+      <p id="welcome" style="margin-top:8px;"></p>
+    </div>
+
+    <!-- DEPOSIT -->
+    <div class="card">
+      <h2>Fund Wallet</h2>
+
+      <input id="depositAmount"
+             type="number"
+             min="100"
+             placeholder="Enter amount">
+
+      <button onclick="deposit()">Deposit</button>
+
+      <div id="depositMessage" class="message"></div>
+    </div>
+
+    <!-- DATA -->
+    <div class="card">
+      <h2>Buy Data</h2>
+
+      <select id="network">
+        <option value="">Select Network</option>
+        <option value="MTN">MTN</option>
+        <option value="GLO">GLO</option>
+        <option value="Airtel">Airtel</option>
+        <option value="9mobile">9mobile</option>
+      </select>
+
+      <input id="dataPhone"
+             type="tel"
+             placeholder="Recipient phone number">
+
+      <div class="grid">
+
+        <div class="bundle">
+          <strong>500MB</strong>
+          <div class="price">₦450</div>
+          <button onclick="buyData('500MB',450)">Buy</button>
+        </div>
+
+        <div class="bundle">
+          <strong>1GB</strong>
+          <div class="price">₦900</div>
+          <button onclick="buyData('1GB',900)">Buy</button>
+        </div>
+
+        <div class="bundle">
+          <strong>2GB</strong>
+          <div class="price">₦1,800</div>
+          <button onclick="buyData('2GB',1800)">Buy</button>
+        </div>
+
+      </div>
+
+      <div id="dataMessage" class="message"></div>
+    </div>
+
+    <!-- TRANSACTIONS -->
+    <div class="card">
+      <h2>Transaction History</h2>
+      <div id="transactions">
+        <p>No transactions yet.</p>
+      </div>
+    </div>
+
+    <button class="logout" onclick="logout()">Logout</button>
+
+  </section>
+
+</div>
+
+<footer>
+  © 2026 SanibossXM. All rights reserved.
+</footer>
+
+<script>
+
+  /*
+    IMPORTANT:
+    This is the Render backend URL we were using.
+  */
+  const BACKEND_URL =
+    "https://sanibossxm-backend-3.onrender.com";
+
+  let currentUser = null;
+
+  // Load saved demo account from browser
+  window.onload = function() {
+    const savedUser = localStorage.getItem("saniboss_user");
+
+    if (savedUser) {
+      currentUser = JSON.parse(savedUser);
+      showDashboard();
+    }
+  };
+
+
+  function showMessage(id, text) {
+    const box = document.getElementById(id);
+    box.innerText = text;
+    box.style.display = "block";
   }
 
-  return data;
-}
 
-// Logout
-function logoutCustomer() {
-  localStorage.removeItem("saniboss_token");
-  location.reload();
-}
+  function register() {
 
-console.log("SanibossXM connected to backend:", API_BASE_URL);
+    const name = document.getElementById("name").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    if (!name || !phone || !email || !password) {
+      showMessage(
+        "authMessage",
+        "Please fill in all fields."
+      );
+      return;
+    }
+
+    currentUser = {
+      name: name,
+      phone: phone,
+      email: email,
+      password: password,
+      balance: 0,
+      transactions: []
+    };
+
+    localStorage.setItem(
+      "saniboss_user",
+      JSON.stringify(currentUser)
+    );
+
+    showMessage(
+      "authMessage",
+      "Account created successfully."
+    );
+
+    showDashboard();
+  }
+
+
+  function login() {
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    const savedUser =
+      localStorage.getItem("saniboss_user");
+
+    if (!savedUser) {
+      showMessage(
+        "authMessage",
+        "No account found. Please register first."
+      );
+      return;
+    }
+
+    const user = JSON.parse(savedUser);
+
+    if (
+      user.email !== email ||
+      user.password !== password
+    ) {
+      showMessage(
+        "authMessage",
+        "Incorrect email or password."
+      );
+      return;
+    }
+
+    currentUser = user;
+
+    showDashboard();
+  }
+
+
+  function showDashboard() {
+
+    document
+      .getElementById("authSection")
+      .classList.add("hidden");
+
+    document
+      .getElementById("dashboard")
+      .classList.remove("hidden");
+
+    document.getElementById("welcome").innerText =
+      "Welcome, " + currentUser.name;
+
+    updateBalance();
+    showTransactions();
+  }
+
+
+  function updateBalance() {
+
+    document.getElementById("balance").innerText =
+      Number(currentUser.balance || 0)
+      .toLocaleString("en-NG", {
+        minimumFractionDigits: 2
+      });
+  }
+
+
+  function deposit() {
+
+    const amount =
+      Number(
+        document.getElementById("depositAmount").value
+      );
+
+    if (!amount || amount < 100) {
+      showMessage(
+        "depositMessage",
+        "Minimum deposit is ₦100."
+      );
+      return;
+    }
+
+    /*
+      DEMO ONLY:
+      This does NOT charge a real card.
+      Real payments must be processed through
+      the backend and Paystack.
+    */
+
+    currentUser.balance += amount;
+
+    currentUser.transactions.unshift({
+      type: "Wallet Deposit",
+      amount: amount,
+      date: new Date().toLocaleString()
+    });
+
+    saveUser();
+
+    updateBalance();
+    showTransactions();
+
+    showMessage(
+      "depositMessage",
+      "Demo deposit added successfully."
+    );
+  }
+
+
+  function buyData(bundle, price) {
+
+    const network =
+      document.getElementById("network").value;
+
+    const phone =
+      document.getElementById("dataPhone").value.trim();
+
+    if (!network) {
+      showMessage(
+        "dataMessage",
+        "Please select a network."
+      );
+      return;
+    }
+
+    if (!phone) {
+      showMessage(
+        "dataMessage",
+        "Enter the recipient phone number."
+      );
+      return;
+    }
+
+    if (currentUser.balance < price) {
+      showMessage(
+        "dataMessage",
+        "Insufficient wallet balance."
+      );
+      return;
+    }
+
+    /*
+      DEMO PURCHASE.
+      Do NOT treat this as real data vending yet.
+      The backend needs to be connected to a
+      legitimate data-vending API.
+    */
+
+    currentUser.balance -= price;
+
+    currentUser.transactions.unshift({
+      type: network + " " + bundle,
+      phone: phone,
+      amount: -price,
+      date: new Date().toLocaleString()
+    });
+
+    saveUser();
+
+    updateBalance();
+    showTransactions();
+
+    showMessage(
+      "dataMessage",
+      "Demo order created successfully."
+    );
+  }
+
+
+  function showTransactions() {
+
+    const box =
+      document.getElementById("transactions");
+
+    if (
+      !currentUser.transactions ||
+      currentUser.transactions.length === 0
+    ) {
+      box.innerHTML =
+        "<p>No transactions yet.</p>";
+      return;
+    }
+
+    box.innerHTML =
+      currentUser.transactions
+      .map(function(tx) {
+
+        const amount =
+          Number(tx.amount) >= 0
+            ? "+₦" + Number(tx.amount).toLocaleString()
+            : "-₦" + Math.abs(Number(tx.amount)).toLocaleString();
+
+        return `
+          <div class="transaction">
+            <strong>${tx.type}</strong><br>
+            ${tx.phone ? "Phone: " + tx.phone + "<br>" : ""}
+            Amount: ${amount}<br>
+            <small>${tx.date}</small>
+          </div>
+        `;
+
+      })
+      .join("");
+  }
+
+
+  function saveUser() {
+
+    localStorage.setItem(
+      "saniboss_user",
+      JSON.stringify(currentUser)
+    );
+  }
+
+
+  function logout() {
+
+    currentUser = null;
+
+    localStorage.removeItem(
+      "saniboss_user"
+    );
+
+    location.reload();
+  }
+
 </script>
+
+</body>
+</html>
