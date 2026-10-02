@@ -1,12 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0759b8">
-  <title>SanibossXM - Data & Wallet</title>
-
-  <style>
+  <title>SanibossXM - Data & Wallet</title>  <style>
     * {
       box-sizing: border-box;
       margin: 0;
@@ -163,609 +160,812 @@
         font-size: 28px;
       }
     }
-  </style>
-</head>
-
-<body>
-
-<header>
+  </style></head><body><header>
   <h1>SANIBOSSXM</h1>
   <p>Fast Data • Easy Payments • Reliable Service</p>
-</header>
+</header><div class="container">  <section id="authSection" class="card">
+    <h2>Customer Account</h2><input id="name" type="text" placeholder="Full name">
+<input id="phone" type="tel" placeholder="Phone number">
+<input id="email" type="email" placeholder="Email address">
+<input id="password" type="password" placeholder="Password">
 
-<div class="container">
+<button onclick="register()">Create Account</button>
+<button onclick="login()">Login</button>
 
-  <!-- LOGIN / REGISTER -->
-  <section id="authSection" class="card">
-    <h2>Customer Account</h2>
+<div id="authMessage" class="message"></div>
 
-    <input id="name" type="text" placeholder="Full name">
-    <input id="phone" type="tel" placeholder="Phone number">
-    <input id="email" type="email" placeholder="Email address">
-    <input id="password" type="password" placeholder="Password">
-
-    <button onclick="register()">Create Account</button>
-    <button onclick="login()">Login</button>
-
-    <div id="authMessage" class="message"></div>
-  </section>
-
-  <!-- DASHBOARD -->
-  <section id="dashboard" class="hidden">
-
-    <div class="wallet">
-      <small>Wallet Balance</small>
-      <div class="balance">₦<span id="balance">0.00</span></div>
-      <p id="welcome" style="margin-top:8px;"></p>
-    </div>
-
-    <!-- DEPOSIT -->
-    <div class="card">
-      <h2>Fund Wallet</h2>
-
-      <input id="depositAmount"
-             type="number"
-             min="100"
-             placeholder="Enter amount">
-
-      <button onclick="deposit()">Deposit</button>
-
-      <div id="depositMessage" class="message"></div>
-    </div>
-
-    <!-- DATA -->
-    <div class="card">
-      <h2>Buy Data</h2>
-
-      <select id="network">
-        <option value="">Select Network</option>
-        <option value="MTN">MTN</option>
-        <option value="GLO">GLO</option>
-        <option value="Airtel">Airtel</option>
-        <option value="9mobile">9mobile</option>
-      </select>
-
-      <input id="dataPhone"
-             type="tel"
-             placeholder="Recipient phone number">
-
-      <div class="grid">
-
-        <div class="bundle">
-          <strong>500MB</strong>
-          <div class="price">₦450</div>
-          <button onclick="buyData('500MB',450)">Buy</button>
-        </div>
-
-        <div class="bundle">
-          <strong>1GB</strong>
-          <div class="price">₦900</div>
-          <button onclick="buyData('1GB',900)">Buy</button>
-        </div>
-
-        <div class="bundle">
-          <strong>2GB</strong>
-          <div class="price">₦1,800</div>
-          <button onclick="buyData('2GB',1800)">Buy</button>
-        </div>
-
-      </div>
-
-      <div id="dataMessage" class="message"></div>
-    </div>
-
-    <!-- TRANSACTIONS -->
-    <div class="card">
-      <h2>Transaction History</h2>
-
-      <div id="transactions">
-        <p>No transactions yet.</p>
-      </div>
-    </div>
-
-    <button class="logout" onclick="logout()">Logout</button>
-
-  </section>
-
+  </section>  <section id="dashboard" class="hidden"><div class="wallet">
+  <small>Wallet Balance</small>
+  <div class="balance">₦<span id="balance">0.00</span></div>
+  <p id="welcome" style="margin-top:8px;"></p>
 </div>
 
-<footer>
+
+<div class="card">
+  <h2>Fund Wallet</h2>
+
+  <input
+    id="depositAmount"
+    type="number"
+    min="100"
+    placeholder="Enter amount"
+  >
+
+  <button onclick="deposit()">Deposit</button>
+
+  <div id="depositMessage" class="message"></div>
+</div>
+
+
+<div class="card">
+  <h2>Buy Data</h2>
+
+  <select id="network">
+    <option value="">Select Network</option>
+    <option value="MTN">MTN</option>
+    <option value="GLO">GLO</option>
+    <option value="Airtel">Airtel</option>
+    <option value="9mobile">9mobile</option>
+  </select>
+
+  <input
+    id="dataPhone"
+    type="tel"
+    placeholder="Recipient phone number"
+  >
+
+  <div class="grid">
+
+    <div class="bundle">
+      <strong>500MB</strong>
+      <div class="price">₦450</div>
+      <button onclick="buyData('500MB',450)">Buy</button>
+    </div>
+
+    <div class="bundle">
+      <strong>1GB</strong>
+      <div class="price">₦900</div>
+      <button onclick="buyData('1GB',900)">Buy</button>
+    </div>
+
+    <div class="bundle">
+      <strong>2GB</strong>
+      <div class="price">₦1,800</div>
+      <button onclick="buyData('2GB',1800)">Buy</button>
+    </div>
+
+  </div>
+
+  <div id="dataMessage" class="message"></div>
+</div>
+
+
+<div class="card">
+  <h2>Transaction History</h2>
+
+  <div id="transactions">
+    <p>No transactions yet.</p>
+  </div>
+</div>
+
+<button class="logout" onclick="logout()">Logout</button>
+
+  </section></div><footer>
   © 2026 SanibossXM. All rights reserved.
-</footer>
+</footer><script>
 
-<script>
+const BACKEND_URL =
+  "https://sanibossxm-backend-3.onrender.com";
 
-  const BACKEND_URL =
-    "https://sanibossxm-backend-3.onrender.com";
-
-  let currentUser = null;
+let currentUser = null;
 
 
-  // Load saved demo account
-  window.onload = function() {
+/* =========================
+   PAGE START
+========================= */
 
-    const savedUser =
-      localStorage.getItem("saniboss_user");
+window.onload = async function() {
 
-    if (savedUser) {
+  const savedUser =
+    localStorage.getItem("saniboss_user");
 
-      currentUser =
-        JSON.parse(savedUser);
+  if (savedUser) {
 
-      showDashboard();
-    }
-  };
+    currentUser =
+      JSON.parse(savedUser);
 
+    showDashboard();
 
-  function showMessage(id, text) {
+    /*
+      Check whether Paystack has
+      returned the customer to the website.
+    */
 
-    const box =
-      document.getElementById(id);
-
-    box.innerText = text;
-
-    box.style.display = "block";
+    await verifyPaystackPayment();
   }
+};
 
 
-  function register() {
+/* =========================
+   MESSAGE
+========================= */
 
-    const name =
-      document.getElementById("name").value.trim();
+function showMessage(id, text) {
 
-    const phone =
-      document.getElementById("phone").value.trim();
+  const box =
+    document.getElementById(id);
 
-    const email =
-      document.getElementById("email").value.trim();
+  box.innerText = text;
 
-    const password =
-      document.getElementById("password").value;
-
-
-    if (!name || !phone || !email || !password) {
-
-      showMessage(
-        "authMessage",
-        "Please fill in all fields."
-      );
-
-      return;
-    }
+  box.style.display = "block";
+}
 
 
-    currentUser = {
+/* =========================
+   REGISTER
+========================= */
 
-      name: name,
+function register() {
 
-      phone: phone,
+  const name =
+    document.getElementById("name").value.trim();
 
-      email: email,
+  const phone =
+    document.getElementById("phone").value.trim();
 
-      password: password,
+  const email =
+    document.getElementById("email").value.trim();
 
-      balance: 0,
-
-      transactions: []
-    };
+  const password =
+    document.getElementById("password").value;
 
 
-    localStorage.setItem(
-      "saniboss_user",
-      JSON.stringify(currentUser)
-    );
-
+  if (!name || !phone || !email || !password) {
 
     showMessage(
       "authMessage",
-      "Account created successfully."
+      "Please fill in all fields."
+    );
+
+    return;
+  }
+
+
+  currentUser = {
+
+    name: name,
+
+    phone: phone,
+
+    email: email,
+
+    password: password,
+
+    balance: 0,
+
+    transactions: []
+  };
+
+
+  localStorage.setItem(
+    "saniboss_user",
+    JSON.stringify(currentUser)
+  );
+
+
+  showMessage(
+    "authMessage",
+    "Account created successfully."
+  );
+
+
+  showDashboard();
+}
+
+
+/* =========================
+   LOGIN
+========================= */
+
+function login() {
+
+  const email =
+    document.getElementById("email").value.trim();
+
+  const password =
+    document.getElementById("password").value;
+
+
+  const savedUser =
+    localStorage.getItem("saniboss_user");
+
+
+  if (!savedUser) {
+
+    showMessage(
+      "authMessage",
+      "No account found. Please register first."
+    );
+
+    return;
+  }
+
+
+  const user =
+    JSON.parse(savedUser);
+
+
+  if (
+    user.email !== email ||
+    user.password !== password
+  ) {
+
+    showMessage(
+      "authMessage",
+      "Incorrect email or password."
+    );
+
+    return;
+  }
+
+
+  currentUser = user;
+
+  showDashboard();
+}
+
+
+/* =========================
+   DASHBOARD
+========================= */
+
+function showDashboard() {
+
+  document
+    .getElementById("authSection")
+    .classList.add("hidden");
+
+
+  document
+    .getElementById("dashboard")
+    .classList.remove("hidden");
+
+
+  document.getElementById("welcome").innerText =
+    "Welcome, " + currentUser.name;
+
+
+  updateBalance();
+
+  showTransactions();
+}
+
+
+/* =========================
+   BALANCE
+========================= */
+
+function updateBalance() {
+
+  document.getElementById("balance").innerText =
+
+    Number(
+      currentUser.balance || 0
+    ).toLocaleString(
+      "en-NG",
+      {
+        minimumFractionDigits: 2
+      }
+    );
+}
+
+
+/* =========================
+   PAYSTACK DEPOSIT
+========================= */
+
+async function deposit() {
+
+  const amount =
+    Number(
+      document.getElementById("depositAmount").value
     );
 
 
-    showDashboard();
+  if (!amount || amount < 100) {
+
+    showMessage(
+      "depositMessage",
+      "Minimum deposit is ₦100."
+    );
+
+    return;
   }
 
 
-  function login() {
+  if (!currentUser || !currentUser.email) {
 
-    const email =
-      document.getElementById("email").value.trim();
+    showMessage(
+      "depositMessage",
+      "Please login first."
+    );
 
-    const password =
-      document.getElementById("password").value;
-
-
-    const savedUser =
-      localStorage.getItem("saniboss_user");
+    return;
+  }
 
 
-    if (!savedUser) {
+  try {
 
-      showMessage(
-        "authMessage",
-        "No account found. Please register first."
+    showMessage(
+      "depositMessage",
+      "Connecting to Paystack..."
+    );
+
+
+    const reference =
+      "SANIBOSS-" +
+      Date.now();
+
+
+    const response =
+      await fetch(
+        BACKEND_URL +
+        "/api/payment/initialize",
+        {
+
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+
+            email:
+              currentUser.email,
+
+            amount:
+              amount,
+
+            reference:
+              reference,
+
+            callback_url:
+              window.location.href
+
+          })
+        }
       );
 
-      return;
-    }
 
-
-    const user =
-      JSON.parse(savedUser);
+    const result =
+      await response.json();
 
 
     if (
-      user.email !== email ||
-      user.password !== password
+      !response.ok ||
+      !result.success
+    ) {
+
+      throw new Error(
+        result.message ||
+        "Payment initialization failed."
+      );
+    }
+
+
+    if (
+      result.data &&
+      result.data.authorization_url
+    ) {
+
+      /*
+        Save the amount locally so that
+        the callback page knows what the
+        customer intended to deposit.
+      */
+
+      localStorage.setItem(
+        "saniboss_pending_payment",
+        JSON.stringify({
+          reference: reference,
+          amount: amount
+        })
+      );
+
+
+      window.location.href =
+        result.data.authorization_url;
+
+    } else {
+
+      throw new Error(
+        "Paystack did not return a payment URL."
+      );
+    }
+
+
+  } catch (error) {
+
+    console.error(error);
+
+
+    showMessage(
+      "depositMessage",
+      "Payment error: " +
+      error.message
+    );
+  }
+}
+
+
+/* =========================
+   VERIFY PAYSTACK PAYMENT
+========================= */
+
+async function verifyPaystackPayment() {
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+
+  const reference =
+    params.get("reference");
+
+
+  if (!reference) {
+    return;
+  }
+
+
+  if (!currentUser) {
+    return;
+  }
+
+
+  showMessage(
+    "depositMessage",
+    "Verifying your Paystack payment..."
+  );
+
+
+  try {
+
+    const response =
+      await fetch(
+        BACKEND_URL +
+        "/api/payment/verify/" +
+        encodeURIComponent(reference)
+      );
+
+
+    const result =
+      await response.json();
+
+
+    if (
+      !response.ok ||
+      !result.success ||
+      !result.paid
     ) {
 
       showMessage(
-        "authMessage",
-        "Incorrect email or password."
+        "depositMessage",
+        result.message ||
+        "Payment was not completed."
       );
 
       return;
     }
 
 
-    currentUser = user;
-
-    showDashboard();
-  }
-
-
-  function showDashboard() {
-
-    document
-      .getElementById("authSection")
-      .classList.add("hidden");
-
-
-    document
-      .getElementById("dashboard")
-      .classList.remove("hidden");
-
-
-    document.getElementById("welcome").innerText =
-      "Welcome, " + currentUser.name;
-
-
-    updateBalance();
-
-    showTransactions();
-  }
-
-
-  function updateBalance() {
-
-    document.getElementById("balance").innerText =
-
-      Number(
-        currentUser.balance || 0
-      ).toLocaleString(
-        "en-NG",
-        {
-          minimumFractionDigits: 2
-        }
-      );
-  }
-
-
-  /*
-    PAYSTACK DEPOSIT
-
-    The secret Paystack key stays on the
-    Render backend.
-
-    The frontend only asks the backend
-    to initialize the payment.
-  */
-
-  async function deposit() {
-
-    const amount =
-      Number(
-        document.getElementById("depositAmount").value
+    const pending =
+      JSON.parse(
+        localStorage.getItem(
+          "saniboss_pending_payment"
+        ) || "null"
       );
 
 
-    if (!amount || amount < 100) {
+    /*
+      The backend has confirmed that
+      Paystack marked the transaction
+      successful.
+    */
 
-      showMessage(
-        "depositMessage",
-        "Minimum deposit is ₦100."
+    if (
+      pending &&
+      pending.reference === reference
+    ) {
+
+      const amount =
+        Number(pending.amount);
+
+
+      /*
+        IMPORTANT:
+        This is still browser/demo wallet
+        accounting. A real production wallet
+        must be credited by the backend/database.
+      */
+
+      currentUser.balance =
+        Number(currentUser.balance || 0) +
+        amount;
+
+
+      currentUser.transactions.unshift({
+
+        type:
+          "Wallet Deposit",
+
+        amount:
+          amount,
+
+        reference:
+          reference,
+
+        date:
+          new Date().toLocaleString()
+
+      });
+
+
+      saveUser();
+
+      updateBalance();
+
+      showTransactions();
+
+
+      localStorage.removeItem(
+        "saniboss_pending_payment"
       );
-
-      return;
-    }
-
-
-    if (!currentUser || !currentUser.email) {
-
-      showMessage(
-        "depositMessage",
-        "Please login first."
-      );
-
-      return;
-    }
-
-
-    try {
-
-      showMessage(
-        "depositMessage",
-        "Connecting to Paystack..."
-      );
-
-
-      const reference =
-        "SANIBOSS-" +
-        Date.now();
-
-
-      const response =
-        await fetch(
-          BACKEND_URL +
-          "/api/payment/initialize",
-          {
-
-            method: "POST",
-
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
-
-            body: JSON.stringify({
-
-              email:
-                currentUser.email,
-
-              amount:
-                amount,
-
-              reference:
-                reference,
-
-              callback_url:
-                window.location.href
-
-            })
-          }
-        );
-
-
-      const result =
-        await response.json();
-
-
-      if (
-        !response.ok ||
-        !result.success
-      ) {
-
-        throw new Error(
-          result.message ||
-          "Payment initialization failed"
-        );
-      }
-
-
-      if (
-        result.data &&
-        result.data.authorization_url
-      ) {
-
-        window.location.href =
-          result.data.authorization_url;
-
-      } else {
-
-        throw new Error(
-          "Paystack did not return a payment URL."
-        );
-      }
-
-
-    } catch (error) {
-
-      console.error(error);
 
 
       showMessage(
         "depositMessage",
-        "Payment error: " +
-        error.message
+        "Payment successful! ₦" +
+        amount.toLocaleString() +
+        " has been added to your demo wallet."
       );
-    }
-  }
-
-
-  function buyData(bundle, price) {
-
-    const network =
-      document.getElementById("network").value;
-
-
-    const phone =
-      document.getElementById("dataPhone")
-      .value.trim();
-
-
-    if (!network) {
-
-      showMessage(
-        "dataMessage",
-        "Please select a network."
-      );
-
-      return;
-    }
-
-
-    if (!phone) {
-
-      showMessage(
-        "dataMessage",
-        "Enter the recipient phone number."
-      );
-
-      return;
-    }
-
-
-    if (currentUser.balance < price) {
-
-      showMessage(
-        "dataMessage",
-        "Insufficient wallet balance."
-      );
-
-      return;
     }
 
 
     /*
-      DEMO PURCHASE ONLY.
-
-      Real data vending will be connected
-      through the backend later.
+      Remove the Paystack reference from
+      the browser address bar.
     */
 
-    currentUser.balance -= price;
+    window.history.replaceState(
+      {},
+      document.title,
+      window.location.pathname
+    );
 
 
-    currentUser.transactions.unshift({
+  } catch (error) {
 
-      type:
-        network + " " + bundle,
-
-      phone:
-        phone,
-
-      amount:
-        -price,
-
-      date:
-        new Date().toLocaleString()
-
-    });
-
-
-    saveUser();
-
-    updateBalance();
-
-    showTransactions();
+    console.error(error);
 
 
     showMessage(
-      "dataMessage",
-      "Demo order created successfully."
+      "depositMessage",
+      "Could not verify payment: " +
+      error.message
     );
+  }
+}
+
+
+/* =========================
+   BUY DATA
+========================= */
+
+function buyData(bundle, price) {
+
+  const network =
+    document.getElementById("network").value;
+
+
+  const phone =
+    document.getElementById("dataPhone")
+    .value.trim();
+
+
+  if (!network) {
+
+    showMessage(
+      "dataMessage",
+      "Please select a network."
+    );
+
+    return;
   }
 
 
-  function showTransactions() {
+  if (!phone) {
 
-    const box =
-      document.getElementById(
-        "transactions"
-      );
+    showMessage(
+      "dataMessage",
+      "Enter the recipient phone number."
+    );
+
+    return;
+  }
 
 
-    if (
-      !currentUser.transactions ||
-      currentUser.transactions.length === 0
-    ) {
+  if (currentUser.balance < price) {
 
-      box.innerHTML =
-        "<p>No transactions yet.</p>";
+    showMessage(
+      "dataMessage",
+      "Insufficient wallet balance."
+    );
 
-      return;
-    }
+    return;
+  }
 
+
+  /*
+    DEMO PURCHASE ONLY.
+    Real data vending will be connected
+    through the backend later.
+  */
+
+  currentUser.balance -= price;
+
+
+  currentUser.transactions.unshift({
+
+    type:
+      network + " " + bundle,
+
+    phone:
+      phone,
+
+    amount:
+      -price,
+
+    date:
+      new Date().toLocaleString()
+
+  });
+
+
+  saveUser();
+
+  updateBalance();
+
+  showTransactions();
+
+
+  showMessage(
+    "dataMessage",
+    "Demo order created successfully."
+  );
+}
+
+
+/* =========================
+   TRANSACTIONS
+========================= */
+
+function showTransactions() {
+
+  const box =
+    document.getElementById(
+      "transactions"
+    );
+
+
+  if (
+    !currentUser.transactions ||
+    currentUser.transactions.length === 0
+  ) {
 
     box.innerHTML =
+      "<p>No transactions yet.</p>";
 
-      currentUser.transactions
-
-      .map(function(tx) {
-
-        const amount =
-
-          Number(tx.amount) >= 0
-
-            ? "+₦" +
-              Number(
-                tx.amount
-              ).toLocaleString()
-
-            : "-₦" +
-              Math.abs(
-                Number(tx.amount)
-              ).toLocaleString();
-
-
-        return `
-
-          <div class="transaction">
-
-            <strong>
-              ${tx.type}
-            </strong>
-
-            <br>
-
-            ${
-              tx.phone
-              ? "Phone: " +
-                tx.phone +
-                "<br>"
-              : ""
-            }
-
-            Amount:
-            ${amount}
-
-            <br>
-
-            <small>
-              ${tx.date}
-            </small>
-
-          </div>
-
-        `;
-
-      })
-
-      .join("");
+    return;
   }
 
 
-  function saveUser() {
+  box.innerHTML =
 
-    localStorage.setItem(
-      "saniboss_user",
-      JSON.stringify(currentUser)
-    );
-  }
+    currentUser.transactions
+
+    .map(function(tx) {
+
+      const amount =
+
+        Number(tx.amount) >= 0
+
+          ? "+₦" +
+            Number(
+              tx.amount
+            ).toLocaleString()
+
+          : "-₦" +
+            Math.abs(
+              Number(tx.amount)
+            ).toLocaleString();
 
 
-  function logout() {
+      return `
 
-    currentUser = null;
+        <div class="transaction">
 
-    localStorage.removeItem(
-      "saniboss_user"
-    );
+          <strong>
+            ${tx.type}
+          </strong>
 
-    location.reload();
-  }
+          <br>
 
-</script>
+          ${
+            tx.phone
+            ? "Phone: " +
+              tx.phone +
+              "<br>"
+            : ""
+          }
 
-</body>
+          Amount:
+          ${amount}
+
+          <br>
+
+          ${
+            tx.reference
+            ? "Reference: " +
+              tx.reference +
+              "<br>"
+            : ""
+          }
+
+          <small>
+            ${tx.date}
+          </small>
+
+        </div>
+
+      `;
+
+    })
+
+    .join("");
+}
+
+
+/* =========================
+   SAVE USER
+========================= */
+
+function saveUser() {
+
+  localStorage.setItem(
+    "saniboss_user",
+    JSON.stringify(currentUser)
+  );
+}
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+function logout() {
+
+  currentUser = null;
+
+  localStorage.removeItem(
+    "saniboss_user"
+  );
+
+  location.reload();
+}
+
+</script></body>
 </html>
