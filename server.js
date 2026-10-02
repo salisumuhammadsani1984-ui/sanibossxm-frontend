@@ -8,31 +8,57 @@ const app = express();
 const PORT = process.env.PORT || 10000;
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 
-// Middleware
+// =========================
+// MIDDLEWARE
+// =========================
 app.use(cors());
 app.use(express.json());
 
-// Health check
+// =========================
+// ROOT ROUTE
+// =========================
 app.get("/", (req, res) => {
   res.json({
     success: true,
     message: "SanibossXM backend is running",
-    service: "Paystack Payment API"
+    service: "Paystack Payment API",
+    version: "1.0.1"
   });
 });
 
-// Check backend status
+// =========================
+// HEALTH CHECK
+// =========================
 app.get("/api/health", (req, res) => {
-  res.json({
+  res.status(200).json({
     success: true,
-    message: "Backend is healthy"
+    message: "Backend is healthy",
+    service: "SanibossXM backend",
+    timestamp: new Date().toISOString()
   });
 });
 
-// Initialize Paystack payment
+// =========================
+// TEST API ROUTE
+// =========================
+app.get("/api/test", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "SanibossXM API test successful"
+  });
+});
+
+// =========================
+// INITIALIZE PAYSTACK PAYMENT
+// =========================
 app.post("/api/payment/initialize", async (req, res) => {
   try {
-    const { email, amount, reference, callback_url } = req.body;
+    const {
+      email,
+      amount,
+      reference,
+      callback_url
+    } = req.body;
 
     if (!email || !amount) {
       return res.status(400).json({
@@ -48,9 +74,18 @@ app.post("/api/payment/initialize", async (req, res) => {
       });
     }
 
+    const numericAmount = Number(amount);
+
+    if (!Number.isFinite(numericAmount) || numericAmount < 100) {
+      return res.status(400).json({
+        success: false,
+        message: "Amount must be at least ₦100"
+      });
+    }
+
     const paymentData = {
       email: email,
-      amount: Math.round(Number(amount) * 100)
+      amount: Math.round(numericAmount * 100)
     };
 
     if (reference) {
@@ -72,7 +107,7 @@ app.post("/api/payment/initialize", async (req, res) => {
       }
     );
 
-    return res.json({
+    return res.status(200).json({
       success: true,
       message: "Payment initialized successfully",
       data: response.data.data
@@ -87,15 +122,26 @@ app.post("/api/payment/initialize", async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Unable to initialize payment",
-      error: error.response?.data?.message || error.message
+      error:
+        error.response?.data?.message ||
+        error.message
     });
   }
 });
 
-// Verify Paystack payment
+// =========================
+// VERIFY PAYSTACK PAYMENT
+// =========================
 app.get("/api/payment/verify/:reference", async (req, res) => {
   try {
     const { reference } = req.params;
+
+    if (!reference) {
+      return res.status(400).json({
+        success: false,
+        message: "Payment reference is required"
+      });
+    }
 
     if (!PAYSTACK_SECRET_KEY) {
       return res.status(500).json({
@@ -116,7 +162,7 @@ app.get("/api/payment/verify/:reference", async (req, res) => {
 
     const payment = response.data.data;
 
-    return res.json({
+    return res.status(200).json({
       success: true,
       status: payment.status,
       reference: payment.reference,
@@ -135,20 +181,29 @@ app.get("/api/payment/verify/:reference", async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Unable to verify payment",
-      error: error.response?.data?.message || error.message
+      error:
+        error.response?.data?.message ||
+        error.message
     });
   }
 });
 
-// 404 handler
+// =========================
+// 404 HANDLER
+// =========================
 app.use((req, res) => {
   res.status(404).json({
     success: false,
-    message: "Route not found"
+    message: "Route not found",
+    path: req.originalUrl
   });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`SanibossXM backend running on port ${PORT}`);
+// =========================
+// START SERVER
+// =========================
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(
+    `SanibossXM backend running on port ${PORT}`
+  );
 });
