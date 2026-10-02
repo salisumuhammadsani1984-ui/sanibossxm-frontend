@@ -1,9 +1,12 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0759b8">
-  <title>SanibossXM - Data & Wallet</title>  <style>
+  <title>SanibossXM - Data, Airtime & Wallet</title>
+
+  <style>
     * {
       box-sizing: border-box;
       margin: 0;
@@ -52,7 +55,9 @@
       margin-bottom: 15px;
     }
 
-    input, select, button {
+    input,
+    select,
+    button {
       width: 100%;
       padding: 13px;
       margin-top: 10px;
@@ -142,6 +147,17 @@
     .transaction {
       padding: 12px 0;
       border-bottom: 1px solid #eee;
+      line-height: 1.6;
+    }
+
+    .demo-note {
+      background: #fff8df;
+      border-left: 4px solid #f0ad00;
+      padding: 10px;
+      border-radius: 7px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      line-height: 1.5;
     }
 
     footer {
@@ -160,99 +176,306 @@
         font-size: 28px;
       }
     }
-  </style></head><body><header>
+  </style>
+</head>
+
+<body>
+
+<header>
   <h1>SANIBOSSXM</h1>
-  <p>Fast Data • Easy Payments • Reliable Service</p>
-</header><div class="container">  <section id="authSection" class="card">
-    <h2>Customer Account</h2><input id="name" type="text" placeholder="Full name">
-<input id="phone" type="tel" placeholder="Phone number">
-<input id="email" type="email" placeholder="Email address">
-<input id="password" type="password" placeholder="Password">
+  <p>Fast Data • Airtime • Easy Payments • Reliable Service</p>
+</header>
 
-<button onclick="register()">Create Account</button>
-<button onclick="login()">Login</button>
+<div class="container">
 
-<div id="authMessage" class="message"></div>
+  <!-- =========================
+       CUSTOMER ACCOUNT
+  ========================== -->
 
-  </section>  <section id="dashboard" class="hidden"><div class="wallet">
-  <small>Wallet Balance</small>
-  <div class="balance">₦<span id="balance">0.00</span></div>
-  <p id="welcome" style="margin-top:8px;"></p>
-</div>
+  <section id="authSection" class="card">
+
+    <h2>Customer Account</h2>
+
+    <input
+      id="name"
+      type="text"
+      placeholder="Full name"
+    >
+
+    <input
+      id="phone"
+      type="tel"
+      placeholder="Phone number"
+    >
+
+    <input
+      id="email"
+      type="email"
+      placeholder="Email address"
+    >
+
+    <input
+      id="password"
+      type="password"
+      placeholder="Password"
+    >
+
+    <button onclick="register()">
+      Create Account
+    </button>
+
+    <button onclick="login()">
+      Login
+    </button>
+
+    <div id="authMessage" class="message"></div>
+
+  </section>
 
 
-<div class="card">
-  <h2>Fund Wallet</h2>
+  <!-- =========================
+       DASHBOARD
+  ========================== -->
 
-  <input
-    id="depositAmount"
-    type="number"
-    min="100"
-    placeholder="Enter amount"
-  >
+  <section id="dashboard" class="hidden">
 
-  <button onclick="deposit()">Deposit</button>
+    <!-- WALLET -->
 
-  <div id="depositMessage" class="message"></div>
-</div>
+    <div class="wallet">
 
+      <small>Wallet Balance</small>
 
-<div class="card">
-  <h2>Buy Data</h2>
+      <div class="balance">
+        ₦<span id="balance">0.00</span>
+      </div>
 
-  <select id="network">
-    <option value="">Select Network</option>
-    <option value="MTN">MTN</option>
-    <option value="GLO">GLO</option>
-    <option value="Airtel">Airtel</option>
-    <option value="9mobile">9mobile</option>
-  </select>
+      <p id="welcome" style="margin-top:8px;"></p>
 
-  <input
-    id="dataPhone"
-    type="tel"
-    placeholder="Recipient phone number"
-  >
-
-  <div class="grid">
-
-    <div class="bundle">
-      <strong>500MB</strong>
-      <div class="price">₦450</div>
-      <button onclick="buyData('500MB',450)">Buy</button>
     </div>
 
-    <div class="bundle">
-      <strong>1GB</strong>
-      <div class="price">₦900</div>
-      <button onclick="buyData('1GB',900)">Buy</button>
+
+    <!-- =========================
+         FUND WALLET
+    ========================== -->
+
+    <div class="card">
+
+      <h2>Fund Wallet</h2>
+
+      <input
+        id="depositAmount"
+        type="number"
+        min="100"
+        placeholder="Enter amount"
+      >
+
+      <button onclick="deposit()">
+        Deposit with Paystack
+      </button>
+
+      <div id="depositMessage" class="message"></div>
+
     </div>
 
-    <div class="bundle">
-      <strong>2GB</strong>
-      <div class="price">₦1,800</div>
-      <button onclick="buyData('2GB',1800)">Buy</button>
+
+    <!-- =========================
+         BUY AIRTIME
+    ========================== -->
+
+    <div class="card">
+
+      <h2>Buy Airtime</h2>
+
+      <div class="demo-note">
+        Airtime is currently in demo mode. Your wallet will be
+        deducted and the transaction will be recorded, but real
+        airtime delivery has not yet been connected to a vending API.
+      </div>
+
+      <select id="airtimeNetwork">
+
+        <option value="">
+          Select Network
+        </option>
+
+        <option value="MTN">
+          MTN
+        </option>
+
+        <option value="GLO">
+          GLO
+        </option>
+
+        <option value="Airtel">
+          Airtel
+        </option>
+
+        <option value="9mobile">
+          9mobile
+        </option>
+
+      </select>
+
+
+      <input
+        id="airtimePhone"
+        type="tel"
+        placeholder="Recipient phone number"
+        maxlength="11"
+      >
+
+
+      <input
+        id="airtimeAmount"
+        type="number"
+        min="50"
+        placeholder="Airtime amount e.g. 500"
+      >
+
+
+      <button onclick="buyAirtime()">
+        Buy Airtime
+      </button>
+
+      <div id="airtimeMessage" class="message"></div>
+
     </div>
 
-  </div>
 
-  <div id="dataMessage" class="message"></div>
+    <!-- =========================
+         BUY DATA
+    ========================== -->
+
+    <div class="card">
+
+      <h2>Buy Data</h2>
+
+      <select id="network">
+
+        <option value="">
+          Select Network
+        </option>
+
+        <option value="MTN">
+          MTN
+        </option>
+
+        <option value="GLO">
+          GLO
+        </option>
+
+        <option value="Airtel">
+          Airtel
+        </option>
+
+        <option value="9mobile">
+          9mobile
+        </option>
+
+      </select>
+
+
+      <input
+        id="dataPhone"
+        type="tel"
+        placeholder="Recipient phone number"
+        maxlength="11"
+      >
+
+
+      <div class="grid">
+
+        <div class="bundle">
+
+          <strong>500MB</strong>
+
+          <div class="price">
+            ₦450
+          </div>
+
+          <button
+            onclick="buyData('500MB',450)"
+          >
+            Buy
+          </button>
+
+        </div>
+
+
+        <div class="bundle">
+
+          <strong>1GB</strong>
+
+          <div class="price">
+            ₦900
+          </div>
+
+          <button
+            onclick="buyData('1GB',900)"
+          >
+            Buy
+          </button>
+
+        </div>
+
+
+        <div class="bundle">
+
+          <strong>2GB</strong>
+
+          <div class="price">
+            ₦1,800
+          </div>
+
+          <button
+            onclick="buyData('2GB',1800)"
+          >
+            Buy
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div id="dataMessage" class="message"></div>
+
+    </div>
+
+
+    <!-- =========================
+         TRANSACTION HISTORY
+    ========================== -->
+
+    <div class="card">
+
+      <h2>Transaction History</h2>
+
+      <div id="transactions">
+        <p>No transactions yet.</p>
+      </div>
+
+    </div>
+
+
+    <button
+      class="logout"
+      onclick="logout()"
+    >
+      Logout
+    </button>
+
+  </section>
+
 </div>
 
 
-<div class="card">
-  <h2>Transaction History</h2>
-
-  <div id="transactions">
-    <p>No transactions yet.</p>
-  </div>
-</div>
-
-<button class="logout" onclick="logout()">Logout</button>
-
-  </section></div><footer>
+<footer>
   © 2026 SanibossXM. All rights reserved.
-</footer><script>
+</footer>
+
+
+<script>
 
 const BACKEND_URL =
   "https://sanibossxm-backend-3.onrender.com";
@@ -264,26 +487,35 @@ let currentUser = null;
    PAGE START
 ========================= */
 
-window.onload = async function() {
+window.addEventListener("load", async function() {
 
   const savedUser =
     localStorage.getItem("saniboss_user");
 
+
   if (savedUser) {
 
-    currentUser =
-      JSON.parse(savedUser);
+    try {
 
-    showDashboard();
+      currentUser =
+        JSON.parse(savedUser);
 
-    /*
-      Check whether Paystack has
-      returned the customer to the website.
-    */
+      showDashboard();
 
-    await verifyPaystackPayment();
+      await verifyPaystackPayment();
+
+    } catch (error) {
+
+      console.error(
+        "User loading error:",
+        error
+      );
+
+    }
+
   }
-};
+
+});
 
 
 /* =========================
@@ -295,9 +527,16 @@ function showMessage(id, text) {
   const box =
     document.getElementById(id);
 
+
+  if (!box) {
+    return;
+  }
+
+
   box.innerText = text;
 
   box.style.display = "block";
+
 }
 
 
@@ -308,19 +547,31 @@ function showMessage(id, text) {
 function register() {
 
   const name =
-    document.getElementById("name").value.trim();
+    document.getElementById("name")
+      .value.trim();
+
 
   const phone =
-    document.getElementById("phone").value.trim();
+    document.getElementById("phone")
+      .value.trim();
+
 
   const email =
-    document.getElementById("email").value.trim();
+    document.getElementById("email")
+      .value.trim();
+
 
   const password =
-    document.getElementById("password").value;
+    document.getElementById("password")
+      .value;
 
 
-  if (!name || !phone || !email || !password) {
+  if (
+    !name ||
+    !phone ||
+    !email ||
+    !password
+  ) {
 
     showMessage(
       "authMessage",
@@ -328,6 +579,7 @@ function register() {
     );
 
     return;
+
   }
 
 
@@ -344,6 +596,7 @@ function register() {
     balance: 0,
 
     transactions: []
+
   };
 
 
@@ -360,6 +613,7 @@ function register() {
 
 
   showDashboard();
+
 }
 
 
@@ -370,14 +624,19 @@ function register() {
 function login() {
 
   const email =
-    document.getElementById("email").value.trim();
+    document.getElementById("email")
+      .value.trim();
+
 
   const password =
-    document.getElementById("password").value;
+    document.getElementById("password")
+      .value;
 
 
   const savedUser =
-    localStorage.getItem("saniboss_user");
+    localStorage.getItem(
+      "saniboss_user"
+    );
 
 
   if (!savedUser) {
@@ -388,6 +647,7 @@ function login() {
     );
 
     return;
+
   }
 
 
@@ -406,12 +666,15 @@ function login() {
     );
 
     return;
+
   }
 
 
   currentUser = user;
 
+
   showDashboard();
+
 }
 
 
@@ -431,13 +694,16 @@ function showDashboard() {
     .classList.remove("hidden");
 
 
-  document.getElementById("welcome").innerText =
+  document.getElementById(
+    "welcome"
+  ).innerText =
     "Welcome, " + currentUser.name;
 
 
   updateBalance();
 
   showTransactions();
+
 }
 
 
@@ -447,7 +713,9 @@ function showDashboard() {
 
 function updateBalance() {
 
-  document.getElementById("balance").innerText =
+  document.getElementById(
+    "balance"
+  ).innerText =
 
     Number(
       currentUser.balance || 0
@@ -457,6 +725,21 @@ function updateBalance() {
         minimumFractionDigits: 2
       }
     );
+
+}
+
+
+/* =========================
+   SAVE USER
+========================= */
+
+function saveUser() {
+
+  localStorage.setItem(
+    "saniboss_user",
+    JSON.stringify(currentUser)
+  );
+
 }
 
 
@@ -468,7 +751,9 @@ async function deposit() {
 
   const amount =
     Number(
-      document.getElementById("depositAmount").value
+      document.getElementById(
+        "depositAmount"
+      ).value
     );
 
 
@@ -480,10 +765,14 @@ async function deposit() {
     );
 
     return;
+
   }
 
 
-  if (!currentUser || !currentUser.email) {
+  if (
+    !currentUser ||
+    !currentUser.email
+  ) {
 
     showMessage(
       "depositMessage",
@@ -491,6 +780,7 @@ async function deposit() {
     );
 
     return;
+
   }
 
 
@@ -500,11 +790,6 @@ async function deposit() {
       "depositMessage",
       "Connecting to Paystack..."
     );
-
-
-    const reference =
-      "SANIBOSS-" +
-      Date.now();
 
 
     const response =
@@ -528,19 +813,24 @@ async function deposit() {
             amount:
               amount,
 
-            reference:
-              reference,
-
             callback_url:
-              window.location.href
+              window.location.origin +
+              window.location.pathname
 
           })
+
         }
       );
 
 
     const result =
       await response.json();
+
+
+    console.log(
+      "Paystack initialization:",
+      result
+    );
 
 
     if (
@@ -552,43 +842,57 @@ async function deposit() {
         result.message ||
         "Payment initialization failed."
       );
+
     }
 
 
     if (
-      result.data &&
-      result.data.authorization_url
+      !result.data ||
+      !result.data.authorization_url ||
+      !result.data.reference
     ) {
 
-      /*
-        Save the amount locally so that
-        the callback page knows what the
-        customer intended to deposit.
-      */
-
-      localStorage.setItem(
-        "saniboss_pending_payment",
-        JSON.stringify({
-          reference: reference,
-          amount: amount
-        })
-      );
-
-
-      window.location.href =
-        result.data.authorization_url;
-
-    } else {
-
       throw new Error(
-        "Paystack did not return a payment URL."
+        "Paystack did not return a valid payment URL or reference."
       );
+
     }
+
+
+    /*
+      IMPORTANT:
+      Save Paystack's actual reference,
+      not a reference generated by the frontend.
+    */
+
+    localStorage.setItem(
+      "saniboss_pending_payment",
+      JSON.stringify({
+
+        reference:
+          result.data.reference,
+
+        amount:
+          amount
+
+      })
+    );
+
+
+    /*
+      Send customer to Paystack.
+    */
+
+    window.location.href =
+      result.data.authorization_url;
 
 
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "Payment initialization error:",
+      error
+    );
 
 
     showMessage(
@@ -596,7 +900,9 @@ async function deposit() {
       "Payment error: " +
       error.message
     );
+
   }
+
 }
 
 
@@ -612,33 +918,47 @@ async function verifyPaystackPayment() {
     );
 
 
+  /*
+    Paystack can return reference
+    or trxref depending on the flow.
+  */
+
   const reference =
-    params.get("reference");
+    params.get("reference") ||
+    params.get("trxref");
 
 
   if (!reference) {
+
     return;
+
   }
 
 
   if (!currentUser) {
+
     return;
+
   }
-
-
-  showMessage(
-    "depositMessage",
-    "Verifying your Paystack payment..."
-  );
 
 
   try {
 
+    showMessage(
+      "depositMessage",
+      "Verifying your Paystack payment..."
+    );
+
+
     const response =
       await fetch(
+
         BACKEND_URL +
         "/api/payment/verify/" +
-        encodeURIComponent(reference)
+        encodeURIComponent(
+          reference
+        )
+
       );
 
 
@@ -646,19 +966,37 @@ async function verifyPaystackPayment() {
       await response.json();
 
 
+    console.log(
+      "Paystack verification:",
+      result
+    );
+
+
     if (
       !response.ok ||
-      !result.success ||
-      !result.paid
+      !result.success
     ) {
 
       showMessage(
         "depositMessage",
         result.message ||
+        "Payment verification failed."
+      );
+
+      return;
+
+    }
+
+
+    if (!result.paid) {
+
+      showMessage(
+        "depositMessage",
         "Payment was not completed."
       );
 
       return;
+
     }
 
 
@@ -670,74 +1008,162 @@ async function verifyPaystackPayment() {
       );
 
 
-    /*
-      The backend has confirmed that
-      Paystack marked the transaction
-      successful.
-    */
-
-    if (
-      pending &&
-      pending.reference === reference
-    ) {
-
-      const amount =
-        Number(pending.amount);
-
-
-      /*
-        IMPORTANT:
-        This is still browser/demo wallet
-        accounting. A real production wallet
-        must be credited by the backend/database.
-      */
-
-      currentUser.balance =
-        Number(currentUser.balance || 0) +
-        amount;
-
-
-      currentUser.transactions.unshift({
-
-        type:
-          "Wallet Deposit",
-
-        amount:
-          amount,
-
-        reference:
-          reference,
-
-        date:
-          new Date().toLocaleString()
-
-      });
-
-
-      saveUser();
-
-      updateBalance();
-
-      showTransactions();
-
-
-      localStorage.removeItem(
-        "saniboss_pending_payment"
-      );
-
+    if (!pending) {
 
       showMessage(
         "depositMessage",
-        "Payment successful! ₦" +
-        amount.toLocaleString() +
-        " has been added to your demo wallet."
+        "Payment was verified, but no pending deposit was found."
       );
+
+      return;
+
     }
 
 
     /*
-      Remove the Paystack reference from
-      the browser address bar.
+      Make sure the callback reference
+      matches the payment we started.
+    */
+
+    if (
+      pending.reference !== reference
+    ) {
+
+      showMessage(
+        "depositMessage",
+        "Payment reference does not match the pending deposit."
+      );
+
+      return;
+
+    }
+
+
+    /*
+      Prevent the same Paystack payment
+      from being credited twice.
+    */
+
+    const processedKey =
+      "payment_processed_" +
+      reference;
+
+
+    if (
+      localStorage.getItem(
+        processedKey
+      )
+    ) {
+
+      showMessage(
+        "depositMessage",
+        "This payment has already been processed."
+      );
+
+      window.history.replaceState(
+        {},
+        document.title,
+        window.location.pathname
+      );
+
+      return;
+
+    }
+
+
+    const amount =
+      Number(pending.amount);
+
+
+    if (
+      !Number.isFinite(amount) ||
+      amount <= 0
+    ) {
+
+      showMessage(
+        "depositMessage",
+        "Invalid deposit amount."
+      );
+
+      return;
+
+    }
+
+
+    /*
+      Confirmed by Paystack.
+
+      NOTE:
+      The current wallet is still a
+      browser/localStorage demo wallet.
+      A production wallet should be
+      credited on the backend/database.
+    */
+
+    currentUser.balance =
+      Number(
+        currentUser.balance || 0
+      ) + amount;
+
+
+    if (
+      !currentUser.transactions
+    ) {
+
+      currentUser.transactions = [];
+
+    }
+
+
+    currentUser.transactions.unshift({
+
+      type:
+        "Wallet Deposit",
+
+      amount:
+        amount,
+
+      reference:
+        reference,
+
+      status:
+        "Successful",
+
+      date:
+        new Date().toLocaleString()
+
+    });
+
+
+    saveUser();
+
+
+    localStorage.setItem(
+      processedKey,
+      "true"
+    );
+
+
+    localStorage.removeItem(
+      "saniboss_pending_payment"
+    );
+
+
+    updateBalance();
+
+    showTransactions();
+
+
+    showMessage(
+      "depositMessage",
+      "Payment successful! ₦" +
+      amount.toLocaleString() +
+      " has been added to your demo wallet."
+    );
+
+
+    /*
+      Remove reference from the URL.
     */
 
     window.history.replaceState(
@@ -749,7 +1175,10 @@ async function verifyPaystackPayment() {
 
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "Payment verification error:",
+      error
+    );
 
 
     showMessage(
@@ -757,7 +1186,170 @@ async function verifyPaystackPayment() {
       "Could not verify payment: " +
       error.message
     );
+
   }
+
+}
+
+
+/* =========================
+   BUY AIRTIME
+========================= */
+
+function buyAirtime() {
+
+  const network =
+    document.getElementById(
+      "airtimeNetwork"
+    ).value;
+
+
+  const phone =
+    document.getElementById(
+      "airtimePhone"
+    ).value.trim();
+
+
+  const amount =
+    Number(
+      document.getElementById(
+        "airtimeAmount"
+      ).value
+    );
+
+
+  if (!network) {
+
+    showMessage(
+      "airtimeMessage",
+      "Please select a network."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    !/^[0-9]{11}$/.test(phone)
+  ) {
+
+    showMessage(
+      "airtimeMessage",
+      "Enter a valid 11-digit Nigerian phone number."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    !amount ||
+    amount < 50
+  ) {
+
+    showMessage(
+      "airtimeMessage",
+      "Minimum airtime amount is ₦50."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    Number(currentUser.balance || 0) <
+    amount
+  ) {
+
+    showMessage(
+      "airtimeMessage",
+      "Insufficient wallet balance."
+    );
+
+    return;
+
+  }
+
+
+  /*
+    DEMO ONLY.
+    This deducts from the local wallet
+    but does not send real airtime.
+  */
+
+  currentUser.balance =
+    Number(currentUser.balance || 0) -
+    amount;
+
+
+  if (
+    !currentUser.transactions
+  ) {
+
+    currentUser.transactions = [];
+
+  }
+
+
+  currentUser.transactions.unshift({
+
+    type:
+      "Airtime",
+
+    network:
+      network,
+
+    phone:
+      phone,
+
+    amount:
+      -amount,
+
+    status:
+      "Demo Successful",
+
+    date:
+      new Date().toLocaleString()
+
+  });
+
+
+  saveUser();
+
+  updateBalance();
+
+  showTransactions();
+
+
+  showMessage(
+    "airtimeMessage",
+    "Demo airtime purchase successful: " +
+    network +
+    " ₦" +
+    amount.toLocaleString() +
+    " to " +
+    phone +
+    "."
+  );
+
+
+  document.getElementById(
+    "airtimePhone"
+  ).value = "";
+
+
+  document.getElementById(
+    "airtimeAmount"
+  ).value = "";
+
+
+  document.getElementById(
+    "airtimeNetwork"
+  ).value = "";
+
 }
 
 
@@ -768,12 +1360,15 @@ async function verifyPaystackPayment() {
 function buyData(bundle, price) {
 
   const network =
-    document.getElementById("network").value;
+    document.getElementById(
+      "network"
+    ).value;
 
 
   const phone =
-    document.getElementById("dataPhone")
-    .value.trim();
+    document.getElementById(
+      "dataPhone"
+    ).value.trim();
 
 
   if (!network) {
@@ -784,21 +1379,28 @@ function buyData(bundle, price) {
     );
 
     return;
+
   }
 
 
-  if (!phone) {
+  if (
+    !/^[0-9]{11}$/.test(phone)
+  ) {
 
     showMessage(
       "dataMessage",
-      "Enter the recipient phone number."
+      "Enter a valid 11-digit Nigerian phone number."
     );
 
     return;
+
   }
 
 
-  if (currentUser.balance < price) {
+  if (
+    Number(currentUser.balance || 0) <
+    price
+  ) {
 
     showMessage(
       "dataMessage",
@@ -806,16 +1408,28 @@ function buyData(bundle, price) {
     );
 
     return;
+
   }
 
 
   /*
-    DEMO PURCHASE ONLY.
-    Real data vending will be connected
-    through the backend later.
+    DEMO ONLY.
+    Real data delivery will be
+    connected through the backend.
   */
 
-  currentUser.balance -= price;
+  currentUser.balance =
+    Number(currentUser.balance || 0) -
+    price;
+
+
+  if (
+    !currentUser.transactions
+  ) {
+
+    currentUser.transactions = [];
+
+  }
 
 
   currentUser.transactions.unshift({
@@ -828,6 +1442,9 @@ function buyData(bundle, price) {
 
     amount:
       -price,
+
+    status:
+      "Demo Successful",
 
     date:
       new Date().toLocaleString()
@@ -844,8 +1461,9 @@ function buyData(bundle, price) {
 
   showMessage(
     "dataMessage",
-    "Demo order created successfully."
+    "Demo data order created successfully."
   );
+
 }
 
 
@@ -870,85 +1488,84 @@ function showTransactions() {
       "<p>No transactions yet.</p>";
 
     return;
+
   }
 
 
   box.innerHTML =
-
     currentUser.transactions
+      .map(function(tx) {
 
-    .map(function(tx) {
-
-      const amount =
-
-        Number(tx.amount) >= 0
-
-          ? "+₦" +
-            Number(
-              tx.amount
-            ).toLocaleString()
-
-          : "-₦" +
-            Math.abs(
-              Number(tx.amount)
-            ).toLocaleString();
+        const numericAmount =
+          Number(tx.amount);
 
 
-      return `
+        const amountText =
+          numericAmount >= 0
 
-        <div class="transaction">
+            ? "+₦" +
+              numericAmount.toLocaleString()
 
-          <strong>
-            ${tx.type}
-          </strong>
-
-          <br>
-
-          ${
-            tx.phone
-            ? "Phone: " +
-              tx.phone +
-              "<br>"
-            : ""
-          }
-
-          Amount:
-          ${amount}
-
-          <br>
-
-          ${
-            tx.reference
-            ? "Reference: " +
-              tx.reference +
-              "<br>"
-            : ""
-          }
-
-          <small>
-            ${tx.date}
-          </small>
-
-        </div>
-
-      `;
-
-    })
-
-    .join("");
-}
+            : "-₦" +
+              Math.abs(
+                numericAmount
+              ).toLocaleString();
 
 
-/* =========================
-   SAVE USER
-========================= */
+        return `
 
-function saveUser() {
+          <div class="transaction">
 
-  localStorage.setItem(
-    "saniboss_user",
-    JSON.stringify(currentUser)
-  );
+            <strong>
+              ${tx.type}
+            </strong>
+
+            ${
+              tx.network
+              ? "<br>Network: " +
+                tx.network
+              : ""
+            }
+
+            ${
+              tx.phone
+              ? "<br>Phone: " +
+                tx.phone
+              : ""
+            }
+
+            <br>
+
+            Amount:
+            ${amountText}
+
+            ${
+              tx.status
+              ? "<br>Status: " +
+                tx.status
+              : ""
+            }
+
+            ${
+              tx.reference
+              ? "<br>Reference: " +
+                tx.reference
+              : ""
+            }
+
+            <br>
+
+            <small>
+              ${tx.date}
+            </small>
+
+          </div>
+
+        `;
+
+      })
+      .join("");
+
 }
 
 
@@ -965,7 +1582,10 @@ function logout() {
   );
 
   location.reload();
+
 }
 
-</script></body>
+</script>
+
+</body>
 </html>
