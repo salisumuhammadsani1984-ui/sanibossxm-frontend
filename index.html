@@ -188,10 +188,6 @@
 
 <div class="container">
 
-  <!-- =========================
-       CUSTOMER ACCOUNT
-  ========================== -->
-
   <section id="authSection" class="card">
 
     <h2>Customer Account</h2>
@@ -232,14 +228,7 @@
 
   </section>
 
-
-  <!-- =========================
-       DASHBOARD
-  ========================== -->
-
   <section id="dashboard" class="hidden">
-
-    <!-- WALLET -->
 
     <div class="wallet">
 
@@ -252,11 +241,6 @@
       <p id="welcome" style="margin-top:8px;"></p>
 
     </div>
-
-
-    <!-- =========================
-         FUND WALLET
-    ========================== -->
 
     <div class="card">
 
@@ -276,11 +260,6 @@
       <div id="depositMessage" class="message"></div>
 
     </div>
-
-
-    <!-- =========================
-         BUY AIRTIME
-    ========================== -->
 
     <div class="card">
 
@@ -316,14 +295,12 @@
 
       </select>
 
-
       <input
         id="airtimePhone"
         type="tel"
         placeholder="Recipient phone number"
         maxlength="11"
       >
-
 
       <input
         id="airtimeAmount"
@@ -332,7 +309,6 @@
         placeholder="Airtime amount e.g. 500"
       >
 
-
       <button onclick="buyAirtime()">
         Buy Airtime
       </button>
@@ -340,11 +316,6 @@
       <div id="airtimeMessage" class="message"></div>
 
     </div>
-
-
-    <!-- =========================
-         BUY DATA
-    ========================== -->
 
     <div class="card">
 
@@ -374,14 +345,12 @@
 
       </select>
 
-
       <input
         id="dataPhone"
         type="tel"
         placeholder="Recipient phone number"
         maxlength="11"
       >
-
 
       <div class="grid">
 
@@ -401,7 +370,6 @@
 
         </div>
 
-
         <div class="bundle">
 
           <strong>1GB</strong>
@@ -417,7 +385,6 @@
           </button>
 
         </div>
-
 
         <div class="bundle">
 
@@ -437,15 +404,9 @@
 
       </div>
 
-
       <div id="dataMessage" class="message"></div>
 
     </div>
-
-
-    <!-- =========================
-         TRANSACTION HISTORY
-    ========================== -->
 
     <div class="card">
 
@@ -456,7 +417,6 @@
       </div>
 
     </div>
-
 
     <button
       class="logout"
@@ -469,11 +429,9 @@
 
 </div>
 
-
 <footer>
   © 2026 SanibossXM. All rights reserved.
 </footer>
-
 
 <script>
 
@@ -491,7 +449,6 @@ window.addEventListener("load", async function() {
 
   const savedUser =
     localStorage.getItem("saniboss_user");
-
 
   if (savedUser) {
 
@@ -527,13 +484,11 @@ function showMessage(id, text) {
   const box =
     document.getElementById(id);
 
-
   if (!box) {
     return;
   }
 
-
-  box.innerText = text;
+    box.innerText = text;
 
   box.style.display = "block";
 
@@ -544,27 +499,23 @@ function showMessage(id, text) {
    REGISTER
 ========================= */
 
-function register() {
+async function register() {
 
   const name =
     document.getElementById("name")
       .value.trim();
 
-
   const phone =
     document.getElementById("phone")
       .value.trim();
-
 
   const email =
     document.getElementById("email")
       .value.trim();
 
-
   const password =
     document.getElementById("password")
       .value;
-
 
   if (
     !name ||
@@ -582,37 +533,86 @@ function register() {
 
   }
 
+  try {
 
-  currentUser = {
+    showMessage(
+      "authMessage",
+      "Creating your account..."
+    );
 
-    name: name,
+    const response =
+      await fetch(
+        BACKEND_URL + "/api/register",
+        {
 
-    phone: phone,
+          method: "POST",
 
-    email: email,
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
 
-    password: password,
+          body: JSON.stringify({
 
-    balance: 0,
+            name: name,
 
-    transactions: []
+            phone: phone,
 
-  };
+            email: email,
 
+            password: password
 
-  localStorage.setItem(
-    "saniboss_user",
-    JSON.stringify(currentUser)
-  );
+          })
 
+        }
+      );
 
-  showMessage(
-    "authMessage",
-    "Account created successfully."
-  );
+    const result =
+      await response.json();
 
+    if (
+      !response.ok ||
+      !result.success
+    ) {
 
-  showDashboard();
+      showMessage(
+        "authMessage",
+        result.message ||
+        "Registration failed."
+      );
+
+      return;
+
+    }
+
+    currentUser =
+      result.user;
+
+    localStorage.setItem(
+      "saniboss_user",
+      JSON.stringify(currentUser)
+    );
+
+    showMessage(
+      "authMessage",
+      "Account created successfully."
+    );
+
+    showDashboard();
+
+  } catch (error) {
+
+    console.error(
+      "Registration error:",
+      error
+    );
+
+    showMessage(
+      "authMessage",
+      "Unable to connect to the server."
+    );
+
+  }
 
 }
 
@@ -621,59 +621,98 @@ function register() {
    LOGIN
 ========================= */
 
-function login() {
+async function login() {
 
   const email =
     document.getElementById("email")
       .value.trim();
 
-
   const password =
     document.getElementById("password")
       .value;
 
-
-  const savedUser =
-    localStorage.getItem(
-      "saniboss_user"
-    );
-
-
-  if (!savedUser) {
+  if (!email || !password) {
 
     showMessage(
       "authMessage",
-      "No account found. Please register first."
+      "Please enter your email and password."
     );
 
     return;
 
   }
 
-
-  const user =
-    JSON.parse(savedUser);
-
-
-  if (
-    user.email !== email ||
-    user.password !== password
-  ) {
+  try {
 
     showMessage(
       "authMessage",
-      "Incorrect email or password."
+      "Logging in..."
     );
 
-    return;
+    const response =
+      await fetch(
+        BACKEND_URL + "/api/login",
+        {
+
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+
+            email: email,
+
+            password: password
+
+          })
+
+        }
+      );
+
+    const result =
+      await response.json();
+
+    if (
+      !response.ok ||
+      !result.success
+    ) {
+
+      showMessage(
+        "authMessage",
+        result.message ||
+        "Login failed."
+      );
+
+      return;
+
+    }
+
+    currentUser =
+      result.user;
+
+    localStorage.setItem(
+      "saniboss_user",
+      JSON.stringify(currentUser)
+    );
+
+    showDashboard();
+
+  } catch (error) {
+
+    console.error(
+      "Login error:",
+      error
+    );
+
+    showMessage(
+      "authMessage",
+      "Unable to connect to the server."
+    );
 
   }
-
-
-  currentUser = user;
-
-
-  showDashboard();
 
 }
 
@@ -688,17 +727,14 @@ function showDashboard() {
     .getElementById("authSection")
     .classList.add("hidden");
 
-
   document
     .getElementById("dashboard")
     .classList.remove("hidden");
-
 
   document.getElementById(
     "welcome"
   ).innerText =
     "Welcome, " + currentUser.name;
-
 
   updateBalance();
 
@@ -756,7 +792,6 @@ async function deposit() {
       ).value
     );
 
-
   if (!amount || amount < 100) {
 
     showMessage(
@@ -767,7 +802,6 @@ async function deposit() {
     return;
 
   }
-
 
   if (
     !currentUser ||
@@ -783,14 +817,12 @@ async function deposit() {
 
   }
 
-
   try {
 
     showMessage(
       "depositMessage",
       "Connecting to Paystack..."
     );
-
 
     const response =
       await fetch(
@@ -822,16 +854,13 @@ async function deposit() {
         }
       );
 
-
     const result =
       await response.json();
-
 
     console.log(
       "Paystack initialization:",
       result
     );
-
 
     if (
       !response.ok ||
@@ -845,7 +874,6 @@ async function deposit() {
 
     }
 
-
     if (
       !result.data ||
       !result.data.authorization_url ||
@@ -857,13 +885,6 @@ async function deposit() {
       );
 
     }
-
-
-    /*
-      IMPORTANT:
-      Save Paystack's actual reference,
-      not a reference generated by the frontend.
-    */
 
     localStorage.setItem(
       "saniboss_pending_payment",
@@ -878,14 +899,8 @@ async function deposit() {
       })
     );
 
-
-    /*
-      Send customer to Paystack.
-    */
-
     window.location.href =
       result.data.authorization_url;
-
 
   } catch (error) {
 
@@ -893,7 +908,6 @@ async function deposit() {
       "Payment initialization error:",
       error
     );
-
 
     showMessage(
       "depositMessage",
@@ -917,16 +931,9 @@ async function verifyPaystackPayment() {
       window.location.search
     );
 
-
-  /*
-    Paystack can return reference
-    or trxref depending on the flow.
-  */
-
   const reference =
     params.get("reference") ||
     params.get("trxref");
-
 
   if (!reference) {
 
@@ -934,13 +941,11 @@ async function verifyPaystackPayment() {
 
   }
 
-
   if (!currentUser) {
 
     return;
 
   }
-
 
   try {
 
@@ -948,7 +953,6 @@ async function verifyPaystackPayment() {
       "depositMessage",
       "Verifying your Paystack payment..."
     );
-
 
     const response =
       await fetch(
@@ -961,16 +965,13 @@ async function verifyPaystackPayment() {
 
       );
 
-
     const result =
       await response.json();
-
 
     console.log(
       "Paystack verification:",
       result
     );
-
 
     if (
       !response.ok ||
@@ -987,7 +988,6 @@ async function verifyPaystackPayment() {
 
     }
 
-
     if (!result.paid) {
 
       showMessage(
@@ -999,14 +999,12 @@ async function verifyPaystackPayment() {
 
     }
 
-
     const pending =
       JSON.parse(
         localStorage.getItem(
           "saniboss_pending_payment"
         ) || "null"
       );
-
 
     if (!pending) {
 
@@ -1018,12 +1016,6 @@ async function verifyPaystackPayment() {
       return;
 
     }
-
-
-    /*
-      Make sure the callback reference
-      matches the payment we started.
-    */
 
     if (
       pending.reference !== reference
@@ -1038,16 +1030,9 @@ async function verifyPaystackPayment() {
 
     }
 
-
-    /*
-      Prevent the same Paystack payment
-      from being credited twice.
-    */
-
     const processedKey =
       "payment_processed_" +
       reference;
-
 
     if (
       localStorage.getItem(
@@ -1070,10 +1055,8 @@ async function verifyPaystackPayment() {
 
     }
 
-
     const amount =
       Number(pending.amount);
-
 
     if (
       !Number.isFinite(amount) ||
@@ -1089,22 +1072,10 @@ async function verifyPaystackPayment() {
 
     }
 
-
-    /*
-      Confirmed by Paystack.
-
-      NOTE:
-      The current wallet is still a
-      browser/localStorage demo wallet.
-      A production wallet should be
-      credited on the backend/database.
-    */
-
     currentUser.balance =
       Number(
         currentUser.balance || 0
       ) + amount;
-
 
     if (
       !currentUser.transactions
@@ -1113,7 +1084,6 @@ async function verifyPaystackPayment() {
       currentUser.transactions = [];
 
     }
-
 
     currentUser.transactions.unshift({
 
@@ -1134,25 +1104,20 @@ async function verifyPaystackPayment() {
 
     });
 
-
     saveUser();
-
 
     localStorage.setItem(
       processedKey,
       "true"
     );
 
-
     localStorage.removeItem(
       "saniboss_pending_payment"
     );
 
-
     updateBalance();
 
     showTransactions();
-
 
     showMessage(
       "depositMessage",
@@ -1161,17 +1126,11 @@ async function verifyPaystackPayment() {
       " has been added to your demo wallet."
     );
 
-
-    /*
-      Remove reference from the URL.
-    */
-
     window.history.replaceState(
       {},
       document.title,
       window.location.pathname
     );
-
 
   } catch (error) {
 
@@ -1179,7 +1138,6 @@ async function verifyPaystackPayment() {
       "Payment verification error:",
       error
     );
-
 
     showMessage(
       "depositMessage",
@@ -1203,12 +1161,10 @@ function buyAirtime() {
       "airtimeNetwork"
     ).value;
 
-
   const phone =
     document.getElementById(
       "airtimePhone"
     ).value.trim();
-
 
   const amount =
     Number(
@@ -1216,7 +1172,6 @@ function buyAirtime() {
         "airtimeAmount"
       ).value
     );
-
 
   if (!network) {
 
@@ -1228,7 +1183,6 @@ function buyAirtime() {
     return;
 
   }
-
 
   if (
     !/^[0-9]{11}$/.test(phone)
@@ -1242,7 +1196,6 @@ function buyAirtime() {
     return;
 
   }
-
 
   if (
     !amount ||
@@ -1258,7 +1211,6 @@ function buyAirtime() {
 
   }
 
-
   if (
     Number(currentUser.balance || 0) <
     amount
@@ -1273,17 +1225,9 @@ function buyAirtime() {
 
   }
 
-
-  /*
-    DEMO ONLY.
-    This deducts from the local wallet
-    but does not send real airtime.
-  */
-
   currentUser.balance =
     Number(currentUser.balance || 0) -
     amount;
-
 
   if (
     !currentUser.transactions
@@ -1292,7 +1236,6 @@ function buyAirtime() {
     currentUser.transactions = [];
 
   }
-
 
   currentUser.transactions.unshift({
 
@@ -1316,13 +1259,11 @@ function buyAirtime() {
 
   });
 
-
   saveUser();
 
   updateBalance();
 
   showTransactions();
-
 
   showMessage(
     "airtimeMessage",
@@ -1335,16 +1276,13 @@ function buyAirtime() {
     "."
   );
 
-
   document.getElementById(
     "airtimePhone"
   ).value = "";
 
-
   document.getElementById(
     "airtimeAmount"
   ).value = "";
-
 
   document.getElementById(
     "airtimeNetwork"
@@ -1364,12 +1302,10 @@ function buyData(bundle, price) {
       "network"
     ).value;
 
-
   const phone =
     document.getElementById(
       "dataPhone"
     ).value.trim();
-
 
   if (!network) {
 
@@ -1381,7 +1317,6 @@ function buyData(bundle, price) {
     return;
 
   }
-
 
   if (
     !/^[0-9]{11}$/.test(phone)
@@ -1395,7 +1330,6 @@ function buyData(bundle, price) {
     return;
 
   }
-
 
   if (
     Number(currentUser.balance || 0) <
@@ -1411,17 +1345,9 @@ function buyData(bundle, price) {
 
   }
 
-
-  /*
-    DEMO ONLY.
-    Real data delivery will be
-    connected through the backend.
-  */
-
   currentUser.balance =
     Number(currentUser.balance || 0) -
     price;
-
 
   if (
     !currentUser.transactions
@@ -1430,7 +1356,6 @@ function buyData(bundle, price) {
     currentUser.transactions = [];
 
   }
-
 
   currentUser.transactions.unshift({
 
@@ -1451,13 +1376,11 @@ function buyData(bundle, price) {
 
   });
 
-
   saveUser();
 
   updateBalance();
 
   showTransactions();
-
 
   showMessage(
     "dataMessage",
@@ -1478,7 +1401,6 @@ function showTransactions() {
       "transactions"
     );
 
-
   if (
     !currentUser.transactions ||
     currentUser.transactions.length === 0
@@ -1491,14 +1413,12 @@ function showTransactions() {
 
   }
 
-
   box.innerHTML =
     currentUser.transactions
       .map(function(tx) {
 
         const numericAmount =
           Number(tx.amount);
-
 
         const amountText =
           numericAmount >= 0
@@ -1510,7 +1430,6 @@ function showTransactions() {
               Math.abs(
                 numericAmount
               ).toLocaleString();
-
 
         return `
 
@@ -1588,4 +1507,4 @@ function logout() {
 </script>
 
 </body>
-</html>
+</html> =
